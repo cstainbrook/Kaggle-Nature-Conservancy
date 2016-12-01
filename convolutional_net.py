@@ -60,27 +60,33 @@ def load_test():
 def make_net():
     model = Sequential()
     model.add(Convolution2D(128, 3, 3, input_shape=(3, 128, 128), border_mode='same', activation='relu', W_constraint=maxnorm(3)))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.5))
+
+
     model.add(Convolution2D(128, 3, 3, activation='relu', border_mode='same', W_constraint=maxnorm(3)))
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Flatten())
+
+
     model.add(Dense(512, activation='relu', W_constraint=maxnorm(3)))
     model.add(Dropout(0.5))
     model.add(Dense(num_classes, activation='softmax'))
+
+
     # Compile model
     epochs = 25
     lrate = 0.01
     decay = lrate/epochs
     sgd = SGD(lr=lrate, momentum=0.9, decay=decay, nesterov=False)
     model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
-    print(model.summary())
+    print model.summary()
     return model
 
 def evaluate_net():
     model.fit(X_train, y_train, nb_epoch=50, batch_size=32)
     # Final evaluation of the model
     scores = model.evaluate(X_train, y_train, verbose=0)
-    print("Accuracy: %.2f%%" % (scores[1]*100))
+    print "Accuracy: {}".format(scores[1]*100)
 
 if __name__ == '__main__':
     X_train, y_train, X_train_id = load_train()
